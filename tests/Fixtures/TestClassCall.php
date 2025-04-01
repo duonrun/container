@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace FiveOrbs\Registry\Tests\Fixtures;
+namespace Duon\Registry\Tests\Fixtures;
 
-use FiveOrbs\Registry\Call;
-use FiveOrbs\Registry\Registry;
+use Duon\Registry\Call;
+use Duon\Registry\Registry;
 
 #[Call('method1'), Call('method2', arg2: 'arg2', arg1: 'arg1')]
 class TestClassCall

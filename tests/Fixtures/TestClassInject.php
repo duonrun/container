@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace FiveOrbs\Registry\Tests\Fixtures;
+namespace Duon\Registry\Tests\Fixtures;
 
-use FiveOrbs\Registry\Call;
-use FiveOrbs\Registry\Inject;
-use FiveOrbs\Registry\Registry;
+use Duon\Registry\Call;
+use Duon\Registry\Inject;
+use Duon\Registry\Registry;
 
 #[Call('callThis')]
 class TestClassInject

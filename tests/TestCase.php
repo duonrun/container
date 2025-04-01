@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace FiveOrbs\Registry\Tests;
+namespace Duon\Registry\Tests;
 
-use FiveOrbs\Registry\Registry;
+use Duon\Registry\Registry;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
 /**

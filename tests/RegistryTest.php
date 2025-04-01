@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace FiveOrbs\Registry\Tests;
+namespace Duon\Registry\Tests;
 
 use Closure;
-use FiveOrbs\Registry\Entry;
-use FiveOrbs\Registry\Exception\ContainerException;
-use FiveOrbs\Registry\Exception\NotFoundException;
-use FiveOrbs\Registry\Registry;
-use FiveOrbs\Registry\Tests\Fixtures\TestClass;
-use FiveOrbs\Registry\Tests\Fixtures\TestClassApp;
-use FiveOrbs\Registry\Tests\Fixtures\TestClassRegistryArgs;
-use FiveOrbs\Registry\Tests\Fixtures\TestClassRegistrySingleArg;
-use FiveOrbs\Registry\Tests\Fixtures\TestClassWithConstructor;
-use FiveOrbs\Registry\Tests\Fixtures\TestContainer;
-use FiveOrbs\Registry\Tests\TestCase;
+use Duon\Registry\Entry;
+use Duon\Registry\Exception\ContainerException;
+use Duon\Registry\Exception\NotFoundException;
+use Duon\Registry\Registry;
+use Duon\Registry\Tests\Fixtures\TestClass;
+use Duon\Registry\Tests\Fixtures\TestClassApp;
+use Duon\Registry\Tests\Fixtures\TestClassRegistryArgs;
+use Duon\Registry\Tests\Fixtures\TestClassRegistrySingleArg;
+use Duon\Registry\Tests\Fixtures\TestClassWithConstructor;
+use Duon\Registry\Tests\Fixtures\TestContainer;
+use Duon\Registry\Tests\TestCase;
 use Psr\Container\ContainerInterface;
 use stdClass;
 
@@ -153,7 +153,7 @@ final class RegistryTest extends TestCase
 
 	public function testAutowiredInstantiationFails(): void
 	{
-		$this->throws(NotFoundException::class, 'Cannot instantiate FiveOrbs\Registry\Tests\NoValidClass');
+		$this->throws(NotFoundException::class, 'Cannot instantiate Duon\Registry\Tests\NoValidClass');
 
 		$registry = new Registry();
 
@@ -253,7 +253,7 @@ final class RegistryTest extends TestCase
 
 	public function testGettingNonResolvableEntryFails(): void
 	{
-		$this->throws(NotFoundException::class, 'Unresolvable id: FiveOrbs\Registry\Tests\InvalidClass');
+		$this->throws(NotFoundException::class, 'Unresolvable id: Duon\Registry\Tests\InvalidClass');
 
 		$registry = new Registry();
 		$registry->add('unresolvable', InvalidClass::class);
@@ -264,7 +264,7 @@ final class RegistryTest extends TestCase
 	{
 		$this->throws(
 			NotFoundException::class,
-			'Unresolvable id: FiveOrbs\Registry\Tests\Fixtures\TestClassRegistryArgs',
+			'Unresolvable id: Duon\Registry\Tests\Fixtures\TestClassRegistryArgs',
 		);
 
 		$registry = new Registry(autowire: true);
@@ -432,7 +432,7 @@ final class RegistryTest extends TestCase
 
 		$this->assertSame(['class'], $registry->entries());
 		$this->assertSame(
-			['Psr\Container\ContainerInterface', 'FiveOrbs\Registry\Registry', 'class'],
+			['Psr\Container\ContainerInterface', 'Duon\Registry\Registry', 'class'],
 			$registry->entries(includeRegistry: true),
 		);
 	}
@@ -449,7 +449,7 @@ final class RegistryTest extends TestCase
 		$this->assertSame(['class', 'registry'], $registry->tag('tag')->entries());
 		$this->assertSame([
 			'Psr\Container\ContainerInterface',
-			'FiveOrbs\Registry\Registry',
+			'Duon\Registry\Registry',
 			'class',
 			'registry',
 		], $registry->tag('tag')->entries(true));

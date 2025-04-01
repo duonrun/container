@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace FiveOrbs\Registry;
+namespace Duon\Registry;
 
 use Closure;
-use FiveOrbs\Registry\Exception\ContainerException;
-use FiveOrbs\Wire\Call;
+use Duon\Registry\Exception\ContainerException;
+use Duon\Wire\Call;
 
 /**
  * @psalm-api

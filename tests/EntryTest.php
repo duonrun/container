@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace FiveOrbs\Registry\Tests;
+namespace Duon\Registry\Tests;
 
-use FiveOrbs\Registry\Entry;
-use FiveOrbs\Registry\Tests\TestCase;
+use Duon\Registry\Entry;
+use Duon\Registry\Tests\TestCase;
 use stdClass;
 
 final class EntryTest extends TestCase

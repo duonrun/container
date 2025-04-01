@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace FiveOrbs\Registry;
+namespace Duon\Registry;
 
 use Closure;
-use FiveOrbs\Registry\Entry;
-use FiveOrbs\Registry\Exception\NotFoundException;
-use FiveOrbs\Wire\CallableResolver;
-use FiveOrbs\Wire\Creator;
-use FiveOrbs\Wire\Exception\WireException;
-use FiveOrbs\Wire\WireContainer;
+use Duon\Registry\Entry;
+use Duon\Registry\Exception\NotFoundException;
+use Duon\Wire\CallableResolver;
+use Duon\Wire\Creator;
+use Duon\Wire\Exception\WireException;
+use Duon\Wire\WireContainer;
 use Psr\Container\ContainerInterface as Container;
 
 /**

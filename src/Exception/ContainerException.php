@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FiveOrbs\Registry\Exception;
+namespace Duon\Registry\Exception;
 
 use Psr\Container\ContainerExceptionInterface;
 use RuntimeException;

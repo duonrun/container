@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FiveOrbs\Registry\Tests\Fixtures;
+namespace Duon\Registry\Tests\Fixtures;
 
 class TestClassWithConstructor
 {

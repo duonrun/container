@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/../../vendor/autoload.php';
 
-use FiveOrbs\Registry\Registry;
+use Duon\Registry\Registry;
 
 class Value
 {
