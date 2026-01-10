@@ -19,7 +19,7 @@
 		"psr/container": "^2.0"
 	},
 	"require-dev": {
-		"duon/dev": "^1.1",
+		"duon/dev": "dev-main",
 		"dealerdirect/phpcodesniffer-composer-installer": "^1",
 		"ernst/coverlyzer": "^0.2",
 		"phpunit/phpunit": "^12.0",
