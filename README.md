@@ -10,6 +10,4 @@ A PSR-11 compatible dependency injection container.
 
 ## License
 
-Duon Registry is released under the MIT [license](LICENSE.md).
-
-Copyright Thomas Ernst. All rights reserved.
+This project is licensed under the [MIT license](LICENSE.md).
