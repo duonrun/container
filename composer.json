@@ -11,19 +11,20 @@
 	],
 	"type": "library",
 	"license": "MIT",
-	"minimum-stability": "dev",
-	"prefer-stable": true,
+	"authors": [
+		{
+			"name": "Thomas Ernst",
+			"email": "duon@ebenefuenf.de"
+		}
+	],
+	"homepage": "https://duon.run/registry",
 	"require": {
-		"php": ">=8.2",
-		"duon/wire": "dev-main",
+		"php": "^8.5",
+		"duon/wire": "^0.1",
 		"psr/container": "^2.0"
 	},
 	"require-dev": {
-		"duon/dev": "dev-main",
-		"dealerdirect/phpcodesniffer-composer-installer": "^1",
-		"ernst/coverlyzer": "^0.2",
-		"phpunit/phpunit": "^12.0",
-		"vimeo/psalm": "^6.10"
+		"duon/dev": "^2.5"
 	},
 	"autoload": {
 		"psr-4": {
@@ -62,17 +63,6 @@
 			"composer check-github",
 			"composer lint"
 		],
-		"docs": [
-			"composer docstest",
-			"./venv/bin/python ./venv/bin/mkdocs build"
-		],
-		"docserve": "./venv/bin/python ./venv/bin/mkdocs serve",
 		"docstest": "./vendor/bin/docs-test-runner ./docs/code"
-	},
-	"config": {
-		"allow-plugins": {
-			"dealerdirect/phpcodesniffer-composer-installer": true,
-			"pestphp/pest-plugin": true
-		}
 	}
 }
