@@ -11,6 +11,7 @@ use Duon\Wire\CallableResolver;
 use Duon\Wire\Creator;
 use Duon\Wire\Exception\WireException;
 use Duon\Wire\WireContainer;
+use Override;
 use Psr\Container\ContainerInterface as Container;
 
 /**
@@ -47,6 +48,7 @@ class Registry implements WireContainer
 		$this->creator = new Creator($this);
 	}
 
+	#[Override]
 	public function has(string $id): bool
 	{
 		return isset($this->entries[$id]) || $this->parent?->has($id) || $this->wrappedContainer?->has($id);
@@ -71,6 +73,7 @@ class Registry implements WireContainer
 		return $this->entries[$id];
 	}
 
+	#[Override]
 	public function get(string $id): mixed
 	{
 		$entry = $this->entries[$id] ?? null;
@@ -101,6 +104,7 @@ class Registry implements WireContainer
 		throw new NotFoundException('Unresolvable id: ' . $id);
 	}
 
+	#[Override]
 	public function definition(string $id): mixed
 	{
 		$entry = $this->entries[$id] ?? null;
