@@ -2,10 +2,10 @@ Duon Registry
 ==============
 
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
-[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/duoncode/registry.svg)](https://scrutinizer-ci.com/g/duoncode/registry/code-structure)
-[![Psalm coverage](https://shepherd.dev/github/duoncode/registry/coverage.svg?)](https://shepherd.dev/github/duoncode/registry)
-[![Psalm level](https://shepherd.dev/github/duoncode/registry/level.svg?)](https://duoncode.dev/registry)
-[![Quality Score](https://img.shields.io/scrutinizer/g/duoncode/registry.svg)](https://scrutinizer-ci.com/g/duoncode/registry)
+[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/duonrun/registry.svg)](https://scrutinizer-ci.com/g/duonrun/registry/code-structure)
+[![Psalm coverage](https://shepherd.dev/github/duonrun/registry/coverage.svg?)](https://shepherd.dev/github/duonrun/registry)
+[![Psalm level](https://shepherd.dev/github/duonrun/registry/level.svg?)](https://duonrun.dev/registry)
+[![Quality Score](https://img.shields.io/scrutinizer/g/duonrun/registry.svg)](https://scrutinizer-ci.com/g/duonrun/registry)
 
 A PSR-11 compatible dependency injection container.
 
