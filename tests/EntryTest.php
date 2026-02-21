@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duon\Registry\Tests;
+namespace Duon\Container\Tests;
 
-use Duon\Registry\Entry;
-use Duon\Registry\Tests\TestCase;
+use Duon\Container\Entry;
+use Duon\Container\Tests\TestCase;
 use stdClass;
 
 final class EntryTest extends TestCase

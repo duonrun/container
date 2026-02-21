@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Duon\Registry\Tests\Fixtures;
+namespace Duon\Container\Tests\Fixtures;
 
-use Duon\Registry\Call;
-use Duon\Registry\Inject;
-use Duon\Registry\Registry;
+use Duon\Container\Container;
+use Duon\Wire\Call;
+use Duon\Wire\Inject;
 
 #[Call('callThis')]
 class TestClassInject
 {
-	public ?Registry $registry = null;
+	public ?Container $container = null;
 	public ?TestClassApp $app = null;
 	public ?TestClass $tc = null;
 	public string $arg1 = '';
@@ -22,12 +22,12 @@ class TestClassInject
 	#[Inject(arg2: 13, tc: TestClassExtended::class), Inject(app: 'injected', arg1: 'arg1')]
 	public function __construct(
 		string $arg1,
-		Registry $registry,
+		Container $container,
 		TestClassApp $app,
 		int $arg2,
 		TestClass $tc,
 	) {
-		$this->registry = $registry;
+		$this->container = $container;
 		$this->app = $app;
 		$this->arg1 = $arg1;
 		$this->arg2 = $arg2;

@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Duon\Registry\Tests\Fixtures;
+namespace Duon\Container\Tests\Fixtures;
 
-use Duon\Registry\Call;
-use Duon\Registry\Registry;
+use Duon\Container\Container;
+use Duon\Wire\Call;
 
 #[Call('method1'), Call('method2', arg2: 'arg2', arg1: 'arg1')]
 class TestClassCall
 {
-	public ?Registry $registry = null;
+	public ?Container $container = null;
 	public ?TestClassApp $app = null;
 	public ?TestClassRequest $request = null;
 	public string $arg1 = '';
 	public string $arg2 = '';
 
-	public function method1(Registry $registry, TestClassApp $app): void
+	public function method1(Container $container, TestClassApp $app): void
 	{
-		$this->registry = $registry;
+		$this->container = $container;
 		$this->app = $app;
 	}
 

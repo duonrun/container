@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Duon\Registry\Tests;
+namespace Duon\Container\Tests;
 
-use Duon\Registry\Registry;
+use Duon\Container\Container;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
 /**
@@ -14,13 +14,13 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
  */
 class TestCase extends BaseTestCase
 {
-	public function registry(
+	public function container(
 		bool $autowire = true,
-	): Registry {
-		$registry = new Registry(autowire: $autowire);
-		$registry->add(Registry::class, $registry);
+	): Container {
+		$container = new Container(autowire: $autowire);
+		$container->add(Container::class, $container);
 
-		return $registry;
+		return $container;
 	}
 
 	public function throws(string $exception, ?string $message = null): void
