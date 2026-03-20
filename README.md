@@ -8,6 +8,22 @@
 
 A PSR-11 compatible dependency injection container.
 
+## Entry lifetimes
+
+Container entries use explicit lifetimes:
+
+- `shared()` caches one instance per container (default for added entries)
+- `scoped()` caches one instance per requesting container scope
+- `transient()` never caches
+- `value()` returns the configured definition as-is (for literals or raw closures)
+
+```php
+$container->add('config', ['debug' => true])->value();
+$container->add(Service::class)->shared();
+$container->add(RequestContext::class)->scoped();
+$container->add(Builder::class)->transient();
+```
+
 ## License
 
 This project is licensed under the [MIT license](LICENSE.md).

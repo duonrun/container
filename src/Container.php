@@ -184,7 +184,7 @@ class Container implements WireContainer
 		throw new NotFoundException('Cannot instantiate ' . $id);
 	}
 
-	protected function callAndReify(Entry $entry, mixed $value, string $id): mixed
+	protected function callAndCache(Entry $entry, mixed $value, string $id): mixed
 	{
 		foreach ($entry->getCalls() as $call) {
 			$methodToResolve = $call->method;
@@ -195,7 +195,7 @@ class Container implements WireContainer
 			$callable(...$args);
 		}
 
-		if ($entry->shouldReify()) {
+		if ($entry->getLifetime() !== Lifetime::Transient) {
 			$this->instances[$id] = $value;
 		}
 
@@ -204,7 +204,7 @@ class Container implements WireContainer
 
 	protected function resolveEntry(Entry $entry, string $id): mixed
 	{
-		if ($entry->shouldReturnAsIs()) {
+		if ($entry->shouldReturnValue()) {
 			return $entry->definition();
 		}
 
@@ -222,14 +222,14 @@ class Container implements WireContainer
 						/** @psalm-var array<string, mixed> */
 						$args = $args(...(new CallableResolver($this->creator))->resolve($args));
 
-						return $this->callAndReify(
+						return $this->callAndCache(
 							$entry,
 							$this->creator->create($value, $args),
 							$id,
 						);
 					}
 
-					return $this->callAndReify(
+					return $this->callAndCache(
 						$entry,
 						$this->creator->create(
 							$value,
@@ -240,7 +240,7 @@ class Container implements WireContainer
 					);
 				}
 
-				return $this->callAndReify(
+				return $this->callAndCache(
 					$entry,
 					$this->creator->create($value, constructor: $constructor ?? ''),
 					$id,
@@ -248,7 +248,13 @@ class Container implements WireContainer
 			}
 
 			if ($this->has($value)) {
-				return $this->get($value);
+				$result = $this->get($value);
+
+				if ($entry->getLifetime() !== Lifetime::Transient) {
+					$this->instances[$id] = $result;
+				}
+
+				return $result;
 			}
 		}
 
@@ -265,7 +271,7 @@ class Container implements WireContainer
 			/** @var mixed */
 			$result = $value(...$args);
 
-			return $this->callAndReify($entry, $result, $id);
+			return $this->callAndCache($entry, $result, $id);
 		}
 
 		if (is_object($value)) {

@@ -19,8 +19,8 @@ class Entry
 	protected array|Closure|null $args = null;
 
 	protected ?string $constructor = null;
-	protected bool $asIs = false;
-	protected bool $reify;
+	protected bool $value = false;
+	protected Lifetime $lifetime = Lifetime::Shared;
 
 	/** @psalm-var list<Call> */
 	protected array $calls = [];
@@ -31,37 +31,45 @@ class Entry
 	public function __construct(
 		public readonly string $id,
 		protected mixed $definition,
-	) {
-		$this->reify = $this->negotiateReify($definition);
-	}
+	) {}
 
-	public function reify(bool $reify = true): static
+	public function lifetime(Lifetime $lifetime): static
 	{
-		$this->reify = $reify;
+		$this->lifetime = $lifetime;
 
 		return $this;
 	}
 
-	public function shouldReify(): bool
+	public function shared(): static
 	{
-		return $this->reify;
+		return $this->lifetime(Lifetime::Shared);
 	}
 
-	public function asIs(bool $asIs = true): static
+	public function scoped(): static
 	{
-		// An update call is unecessary
-		if ($asIs) {
-			$this->reify = false;
-		}
+		return $this->lifetime(Lifetime::Scoped);
+	}
 
-		$this->asIs = $asIs;
+	public function transient(): static
+	{
+		return $this->lifetime(Lifetime::Transient);
+	}
+
+	public function getLifetime(): Lifetime
+	{
+		return $this->lifetime;
+	}
+
+	public function value(bool $value = true): static
+	{
+		$this->value = $value;
 
 		return $this;
 	}
 
-	public function shouldReturnAsIs(): bool
+	public function shouldReturnValue(): bool
 	{
-		return $this->asIs;
+		return $this->value;
 	}
 
 	public function args(mixed ...$args): static
@@ -128,26 +136,5 @@ class Entry
 	public function definition(): mixed
 	{
 		return $this->definition;
-	}
-
-	protected function negotiateReify(mixed $definition): bool
-	{
-		if (is_string($definition)) {
-			if (is_callable($definition)) {
-				return true;
-			}
-
-			if (!class_exists($definition)) {
-				return false;
-			}
-		} elseif ($definition instanceof Closure) {
-			return true;
-		} else {
-			if (is_scalar($definition) || is_array($definition) || is_object($definition)) {
-				return false;
-			}
-		}
-
-		return true;
 	}
 }

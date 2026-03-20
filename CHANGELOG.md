@@ -6,6 +6,9 @@
 
 - `Container` now keeps runtime instances in container-local caches instead of on `Entry` objects.
 - `Container::definition()` now resolves definitions through parent containers (for example from tags).
+- `Entry` now uses explicit lifetimes with `shared()`, `scoped()`, `transient()`, and `lifetime(...)`.
+- `Entry::asIs()` was renamed to `Entry::value()`.
+- `Entry::reify()` was removed.
 
 ## [0.2.0](https://github.com/duonrun/container/releases/tag/0.2.0) (2026-02-21)
 

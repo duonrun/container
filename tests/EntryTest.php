@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Duon\Container\Tests;
 
 use Duon\Container\Entry;
+use Duon\Container\Lifetime;
 use Duon\Container\Tests\TestCase;
 use stdClass;
 
@@ -16,20 +17,20 @@ final class EntryTest extends TestCase
 
 		$this->assertSame(stdClass::class, $entry->definition());
 		$this->assertSame(null, $entry->getConstructor());
-		$this->assertSame(true, $entry->shouldReify());
-		$this->assertSame(false, $entry->shouldReturnAsIs());
+		$this->assertSame(Lifetime::Shared, $entry->getLifetime());
+		$this->assertSame(false, $entry->shouldReturnValue());
 		$this->assertSame(null, $entry->getArgs());
 
 		$entry
 			->constructor('factoryMethod')
-			->reify(false)
-			->asIs(true)
+			->transient()
+			->value(true)
 			->args(arg1: 13, arg2: 'test');
 
 		$this->assertSame(stdClass::class, $entry->definition());
 		$this->assertSame('factoryMethod', $entry->getConstructor());
-		$this->assertSame(false, $entry->shouldReify());
-		$this->assertSame(true, $entry->shouldReturnAsIs());
+		$this->assertSame(Lifetime::Transient, $entry->getLifetime());
+		$this->assertSame(true, $entry->shouldReturnValue());
 		$this->assertSame(['arg1' => 13, 'arg2' => 'test'], $entry->getArgs());
 	}
 
@@ -48,27 +49,18 @@ final class EntryTest extends TestCase
 		$this->assertSame([], $call2->args);
 	}
 
-	public function testReifyNegotiation(): void
+	public function testLifetimeHelpers(): void
 	{
 		$entry = new Entry('key', stdClass::class);
-		$this->assertSame(true, $entry->shouldReify());
+		$this->assertSame(Lifetime::Shared, $entry->shared()->getLifetime());
+		$this->assertSame(Lifetime::Scoped, $entry->scoped()->getLifetime());
+		$this->assertSame(Lifetime::Transient, $entry->transient()->getLifetime());
+		$this->assertSame(Lifetime::Shared, $entry->lifetime(Lifetime::Shared)->getLifetime());
+	}
 
-		$entry = new Entry('key', 'string');
-		$this->assertSame(false, $entry->shouldReify());
-
-		$entry = new Entry('key', fn() => true);
-		$this->assertSame(true, $entry->shouldReify());
-
-		$entry = new Entry('key', new stdClass());
-		$this->assertSame(false, $entry->shouldReify());
-
-		$entry = new Entry('key', 73);
-		$this->assertSame(false, $entry->shouldReify());
-
-		$entry = new Entry('key', []);
-		$this->assertSame(false, $entry->shouldReify());
-
-		$entry = new Entry('key', '_global_test_function');
-		$this->assertSame(true, $entry->shouldReify());
+	public function testLegacyEntryApiWasRemoved(): void
+	{
+		$this->assertSame(false, method_exists(Entry::class, 'reify'));
+		$this->assertSame(false, method_exists(Entry::class, 'asIs'));
 	}
 }

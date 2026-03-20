@@ -399,7 +399,7 @@ final class ContainerTest extends TestCase
 		})->args('chuck');
 	}
 
-	public function testIsReified(): void
+	public function testSharedLifetimeCachesObjectsByDefault(): void
 	{
 		$container = new Container();
 		$container->add('class', stdClass::class);
@@ -409,11 +409,11 @@ final class ContainerTest extends TestCase
 		$this->assertSame($obj1 === $obj2, true);
 	}
 
-	public function testAsIs(): void
+	public function testValue(): void
 	{
 		$container = new Container();
 		$container->add('closure1', fn() => 'called');
-		$container->add('closure2', fn() => 'notcalled')->asIs();
+		$container->add('closure2', fn() => 'notcalled')->value();
 		$value1 = $container->get('closure1');
 		$value2 = $container->get('closure2');
 
@@ -421,12 +421,31 @@ final class ContainerTest extends TestCase
 		$this->assertSame(true, $value2 instanceof Closure);
 	}
 
-	public function testIsNotReified(): void
+	public function testTransientLifetimeReturnsFreshInstances(): void
 	{
 		$container = new Container();
-		$container->add('class', stdClass::class)->reify(false);
+		$container->add('class', stdClass::class)->transient();
 		$obj1 = $container->get('class');
 		$obj2 = $container->get('class');
+
+		$this->assertSame(false, $obj1 === $obj2);
+	}
+
+	public function testScopedLifetimeCachesObjectsInSameContainer(): void
+	{
+		$container = new Container();
+		$container->add('class', stdClass::class)->scoped();
+		$obj1 = $container->get('class');
+		$obj2 = $container->get('class');
+
+		$this->assertSame(true, $obj1 === $obj2);
+	}
+
+	public function testAutowiringUsesTransientLifetime(): void
+	{
+		$container = new Container();
+		$obj1 = $container->get(stdClass::class);
+		$obj2 = $container->get(stdClass::class);
 
 		$this->assertSame(false, $obj1 === $obj2);
 	}
@@ -434,7 +453,7 @@ final class ContainerTest extends TestCase
 	public function testFetchEntriesList(): void
 	{
 		$container = new Container();
-		$container->add('class', stdClass::class)->reify(false);
+		$container->add('class', stdClass::class)->transient();
 
 		$this->assertSame(['class'], $container->entries());
 		$this->assertSame(
