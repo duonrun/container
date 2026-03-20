@@ -23,7 +23,7 @@ class Container implements WireContainer
 {
 	protected Creator $creator;
 	protected readonly ?PsrContainer $wrappedContainer;
-	protected bool $frozen = false;
+	protected bool $sealed = false;
 
 	/** @psalm-var EntryArray */
 	protected array $entries = [];
@@ -60,8 +60,8 @@ class Container implements WireContainer
 	{
 		$root = $this->root();
 
-		if (!$root->frozen) {
-			$root->freeze();
+		if (!$root->sealed) {
+			$root->seal();
 		}
 
 		return new self(
@@ -189,8 +189,8 @@ class Container implements WireContainer
 			return $this->tags[$tag];
 		}
 
-		if ($this->isRoot() && $this->frozen) {
-			throw new ContainerException('The root container is frozen after scope() was called');
+		if ($this->isRoot() && $this->sealed) {
+			throw new ContainerException('The root container is sealed after scope() was called');
 		}
 
 		$parent = $this;
@@ -432,17 +432,17 @@ class Container implements WireContainer
 
 	protected function assertMutable(): void
 	{
-		if ($this->frozen) {
-			throw new ContainerException('The root container is frozen after scope() was called');
+		if ($this->sealed) {
+			throw new ContainerException('The root container is sealed after scope() was called');
 		}
 	}
 
-	protected function freeze(): void
+	protected function seal(): void
 	{
-		$this->frozen = true;
+		$this->sealed = true;
 
 		foreach ($this->tags as $tagContainer) {
-			$tagContainer->freeze();
+			$tagContainer->seal();
 		}
 	}
 
