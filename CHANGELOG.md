@@ -12,6 +12,8 @@
 - Added `Container::scope()` for isolated per-unit-of-work containers.
 - The root container now freezes internal structural mutation after the first `scope()` call.
 - Shared entries resolve in definition-owner context, scoped and transient entries resolve in requester context.
+- Scope tags now layer over matching root tags and keep scope-local caches.
+- Wrapped PSR container fallback now routes through the root container in scoped resolution.
 
 ## [0.2.0](https://github.com/duonrun/container/releases/tag/0.2.0) (2026-02-21)
 

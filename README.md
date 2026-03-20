@@ -38,7 +38,7 @@ $scope = $root->scope();
 $scope->add(Request::class, $request)->value();
 ```
 
-After the first `scope()` call, the root container is frozen and no longer accepts structural mutations.
+After the first `scope()` call, the root container is frozen and no longer accepts structural mutations. Scope tags can inherit pre-defined root tags while keeping their own local caches.
 
 ## License
 

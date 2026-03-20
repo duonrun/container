@@ -599,6 +599,40 @@ final class ContainerTest extends TestCase
 		$this->assertSame(TestClassApp::class, $container->tag('tag')->entry(TestClassApp::class)->definition());
 	}
 
+	public function testRootTagCreationFailsAfterFirstScope(): void
+	{
+		$this->throws(ContainerException::class, 'frozen');
+
+		$container = new Container();
+		$container->scope();
+		$container->tag('new-tag');
+	}
+
+	public function testScopeTagInheritsRootTagDefinitions(): void
+	{
+		$container = new Container();
+		$container->tag('api')->add('service', fn() => new stdClass())->scoped();
+		$scope = $container->scope();
+		$tag = $scope->tag('api');
+		$service1 = $tag->get('service');
+		$service2 = $tag->get('service');
+
+		$this->assertSame(true, $service1 instanceof stdClass);
+		$this->assertSame(true, $service1 === $service2);
+	}
+
+	public function testScopeTagsKeepOwnScopedCaches(): void
+	{
+		$container = new Container();
+		$container->tag('api')->add('service', fn() => new stdClass())->scoped();
+		$scope1 = $container->scope();
+		$scope2 = $container->scope();
+		$service1 = $scope1->tag('api')->get('service');
+		$service2 = $scope2->tag('api')->get('service');
+
+		$this->assertSame(false, $service1 === $service2);
+	}
+
 	public function testThirdPartyContainer(): void
 	{
 		$testContainer = new TestContainer();
@@ -611,6 +645,28 @@ final class ContainerTest extends TestCase
 		$this->assertSame(true, $container->get(ContainerInterface::class) instanceof TestContainer);
 		$this->assertSame($testContainer, $container->get(ContainerInterface::class));
 		$this->assertSame($testContainer, $container->get(TestContainer::class));
+	}
+
+	public function testScopeResolvesWrappedEntriesViaRoot(): void
+	{
+		$testContainer = new TestContainer();
+		$external = new stdClass();
+		$testContainer->add('external', $external);
+		$container = new Container(container: $testContainer);
+		$scope = $container->scope();
+
+		$this->assertSame($external, $scope->get('external'));
+	}
+
+	public function testScopePrefersParentEntriesOverWrappedContainer(): void
+	{
+		$testContainer = new TestContainer();
+		$testContainer->add('shared-key', 'wrapped');
+		$container = new Container(container: $testContainer);
+		$container->add('shared-key', 'root')->value();
+		$scope = $container->scope();
+
+		$this->assertSame('root', $scope->get('shared-key'));
 	}
 
 	public function testGettingNonExistentTaggedEntryFails(): void

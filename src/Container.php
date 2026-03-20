@@ -56,7 +56,10 @@ class Container implements WireContainer
 	public function scope(): Container
 	{
 		$root = $this->root();
-		$root->frozen = true;
+
+		if (!$root->frozen) {
+			$root->freeze();
+		}
 
 		return new self(
 			autowire: $root->autowire,
@@ -167,9 +170,29 @@ class Container implements WireContainer
 	/** @psalm-param non-empty-string $tag */
 	public function tag(string $tag): Container
 	{
-		if (!isset($this->tags[$tag])) {
-			$this->tags[$tag] = new self(tag: $tag, parent: $this);
+		if (isset($this->tags[$tag])) {
+			return $this->tags[$tag];
 		}
+
+		if ($this->isRoot() && $this->frozen) {
+			throw new ContainerException('The root container is frozen after scope() was called');
+		}
+
+		$parent = $this;
+		$isScope = false;
+
+		if ($this->isScope) {
+			$root = $this->root();
+			$parent = $root->tags[$tag] ?? $root;
+			$isScope = true;
+		}
+
+		$this->tags[$tag] = new self(
+			autowire: $this->autowire,
+			tag: $tag,
+			parent: $parent,
+			isScope: $isScope,
+		);
 
 		return $this->tags[$tag];
 	}
@@ -339,8 +362,17 @@ class Container implements WireContainer
 
 	protected function assertMutable(): void
 	{
-		if ($this->isRoot() && $this->frozen) {
+		if ($this->frozen) {
 			throw new ContainerException('The root container is frozen after scope() was called');
+		}
+	}
+
+	protected function freeze(): void
+	{
+		$this->frozen = true;
+
+		foreach ($this->tags as $tagContainer) {
+			$tagContainer->freeze();
 		}
 	}
 
