@@ -43,15 +43,13 @@ final class ContainerTest extends TestCase
 		$container->add(stdClass::class);
 
 		$this->assertSame(stdClass::class, $container->entry(stdClass::class)->definition());
-		$this->assertSame(null, $container->entry(stdClass::class)->instance());
-		$this->assertSame(stdClass::class, $container->entry(stdClass::class)->get());
 
-		$obj = $container->get(stdClass::class);
+		$obj1 = $container->get(stdClass::class);
+		$obj2 = $container->get(stdClass::class);
 
-		$this->assertSame(true, $obj instanceof stdClass);
+		$this->assertSame(true, $obj1 instanceof stdClass);
 		$this->assertSame(stdClass::class, $container->entry(stdClass::class)->definition());
-		$this->assertSame($obj, $container->entry(stdClass::class)->instance());
-		$this->assertSame($obj, $container->entry(stdClass::class)->get());
+		$this->assertSame($obj1, $obj2);
 	}
 
 	public function testCheckIfRegistered(): void
@@ -225,6 +223,14 @@ final class ContainerTest extends TestCase
 		$container->add('container', Container::class);
 
 		$this->assertSame(Container::class, $container->definition('container'));
+	}
+
+	public function testDefinitionOnTagCanResolveParentEntry(): void
+	{
+		$container = new Container();
+		$container->add('container', Container::class);
+
+		$this->assertSame(Container::class, $container->tag('api')->definition('container'));
 	}
 
 	public function testFailingDefinition(): void
@@ -456,8 +462,7 @@ final class ContainerTest extends TestCase
 		$this->assertSame(true, $obj instanceof stdClass);
 		$this->assertSame(stdClass::class, $entry->definition());
 		$this->assertSame(Container::class, $entryCon->definition());
-		$this->assertSame(true, $obj === $entry->instance());
-		$this->assertSame(true, $obj === $entry->get());
+		$this->assertSame(true, $obj === $container->tag('tag')->get('class'));
 		$this->assertSame(true, $container->tag('tag')->has('class'));
 		$this->assertSame(true, $container->tag('tag')->has('container'));
 		$this->assertSame(false, $container->tag('tag')->has('wrong'));

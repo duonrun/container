@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- `Container` now keeps runtime instances in container-local caches instead of on `Entry` objects.
+- `Container::definition()` now resolves definitions through parent containers (for example from tags).
+
 ## [0.2.0](https://github.com/duonrun/container/releases/tag/0.2.0) (2026-02-21)
 
 Project renamed from duon/registry to duon/container.

@@ -15,24 +15,18 @@ final class EntryTest extends TestCase
 		$entry = new Entry('key', stdClass::class);
 
 		$this->assertSame(stdClass::class, $entry->definition());
-		$this->assertSame(stdClass::class, $entry->get());
-		$this->assertSame(null, $entry->instance());
 		$this->assertSame(null, $entry->getConstructor());
 		$this->assertSame(true, $entry->shouldReify());
 		$this->assertSame(false, $entry->shouldReturnAsIs());
 		$this->assertSame(null, $entry->getArgs());
 
-		$obj = new stdClass();
 		$entry
 			->constructor('factoryMethod')
 			->reify(false)
 			->asIs(true)
-			->args(arg1: 13, arg2: 'test')
-			->set($obj);
+			->args(arg1: 13, arg2: 'test');
 
 		$this->assertSame(stdClass::class, $entry->definition());
-		$this->assertSame($obj, $entry->get());
-		$this->assertSame($obj, $entry->instance());
 		$this->assertSame('factoryMethod', $entry->getConstructor());
 		$this->assertSame(false, $entry->shouldReify());
 		$this->assertSame(true, $entry->shouldReturnAsIs());

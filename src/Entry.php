@@ -21,7 +21,6 @@ class Entry
 	protected ?string $constructor = null;
 	protected bool $asIs = false;
 	protected bool $reify;
-	protected mixed $instance = null;
 
 	/** @psalm-var list<Call> */
 	protected array $calls = [];
@@ -129,21 +128,6 @@ class Entry
 	public function definition(): mixed
 	{
 		return $this->definition;
-	}
-
-	public function instance(): mixed
-	{
-		return $this->instance;
-	}
-
-	public function get(): mixed
-	{
-		return $this->instance ?? $this->definition;
-	}
-
-	public function set(mixed $instance): void
-	{
-		$this->instance = $instance;
 	}
 
 	protected function negotiateReify(mixed $definition): bool

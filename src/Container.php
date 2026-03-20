@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Duon\Container;
 
 use Closure;
-use Duon\Container\Entry;
 use Duon\Container\Exception\NotFoundException;
 use Duon\Wire\CallableResolver;
 use Duon\Wire\Creator;
@@ -26,6 +25,9 @@ class Container implements WireContainer
 
 	/** @psalm-var EntryArray */
 	protected array $entries = [];
+
+	/** @psalm-var array<never, never>|array<string, mixed> */
+	protected array $instances = [];
 
 	/** @psalm-var array<never, never>|array<non-empty-string, self> */
 	protected array $tags = [];
@@ -76,11 +78,15 @@ class Container implements WireContainer
 	#[Override]
 	public function get(string $id): mixed
 	{
-		$entry = $this->entries[$id] ?? null;
-
 		try {
+			if (array_key_exists($id, $this->instances)) {
+				return $this->instances[$id];
+			}
+
+			$entry = $this->entries[$id] ?? null;
+
 			if ($entry) {
-				return $this->resolveEntry($entry);
+				return $this->resolveEntry($entry, $id);
 			}
 
 			if ($this->wrappedContainer?->has($id)) {
@@ -107,7 +113,8 @@ class Container implements WireContainer
 	#[Override]
 	public function definition(string $id): mixed
 	{
-		$entry = $this->entries[$id] ?? null;
+		$resolved = $this->findEntry($id);
+		$entry = $resolved[1] ?? null;
 
 		if ($entry !== null) {
 			return $entry->definition();
@@ -125,6 +132,7 @@ class Container implements WireContainer
 	): Entry {
 		$entry = new Entry($id, $value ?? $id);
 		$this->entries[$id] = $entry;
+		unset($this->instances[$id]);
 
 		return $entry;
 	}
@@ -133,6 +141,7 @@ class Container implements WireContainer
 		Entry $entry,
 	): Entry {
 		$this->entries[$entry->id] = $entry;
+		unset($this->instances[$entry->id]);
 
 		return $entry;
 	}
@@ -175,7 +184,7 @@ class Container implements WireContainer
 		throw new NotFoundException('Cannot instantiate ' . $id);
 	}
 
-	protected function callAndReify(Entry $entry, mixed $value): mixed
+	protected function callAndReify(Entry $entry, mixed $value, string $id): mixed
 	{
 		foreach ($entry->getCalls() as $call) {
 			$methodToResolve = $call->method;
@@ -187,20 +196,20 @@ class Container implements WireContainer
 		}
 
 		if ($entry->shouldReify()) {
-			$entry->set($value);
+			$this->instances[$id] = $value;
 		}
 
 		return $value;
 	}
 
-	protected function resolveEntry(Entry $entry): mixed
+	protected function resolveEntry(Entry $entry, string $id): mixed
 	{
 		if ($entry->shouldReturnAsIs()) {
 			return $entry->definition();
 		}
 
 		/** @var mixed - the current value, instantiated or definition */
-		$value = $entry->get();
+		$value = $entry->definition();
 
 		if (is_string($value)) {
 			if (class_exists($value)) {
@@ -216,6 +225,7 @@ class Container implements WireContainer
 						return $this->callAndReify(
 							$entry,
 							$this->creator->create($value, $args),
+							$id,
 						);
 					}
 
@@ -226,12 +236,14 @@ class Container implements WireContainer
 							predefinedArgs: $args,
 							constructor: $constructor ?? '',
 						),
+						$id,
 					);
 				}
 
 				return $this->callAndReify(
 					$entry,
 					$this->creator->create($value, constructor: $constructor ?? ''),
+					$id,
 				);
 			}
 
@@ -253,7 +265,7 @@ class Container implements WireContainer
 			/** @var mixed */
 			$result = $value(...$args);
 
-			return $this->callAndReify($entry, $result);
+			return $this->callAndReify($entry, $result, $id);
 		}
 
 		if (is_object($value)) {
@@ -261,5 +273,17 @@ class Container implements WireContainer
 		}
 
 		throw new NotFoundException('Unresolvable id: ' . (string) $value);
+	}
+
+	/** @return array{Container, Entry}|null */
+	protected function findEntry(string $id): ?array
+	{
+		$entry = $this->entries[$id] ?? null;
+
+		if ($entry !== null) {
+			return [$this, $entry];
+		}
+
+		return $this->parent?->findEntry($id);
 	}
 }
