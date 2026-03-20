@@ -451,9 +451,9 @@ final class ContainerTest extends TestCase
 		$this->assertSame(false, $obj1 === $obj2);
 	}
 
-	public function testScopeFreezesRoot(): void
+	public function testScopeSealsRoot(): void
 	{
-		$this->throws(ContainerException::class, 'frozen');
+		$this->throws(ContainerException::class, 'sealed');
 
 		$container = new Container();
 		$container->scope();
@@ -680,7 +680,7 @@ final class ContainerTest extends TestCase
 
 	public function testRootTagCreationFailsAfterFirstScope(): void
 	{
-		$this->throws(ContainerException::class, 'frozen');
+		$this->throws(ContainerException::class, 'sealed');
 
 		$container = new Container();
 		$container->scope();
