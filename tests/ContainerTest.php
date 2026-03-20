@@ -450,6 +450,108 @@ final class ContainerTest extends TestCase
 		$this->assertSame(false, $obj1 === $obj2);
 	}
 
+	public function testScopeFreezesRoot(): void
+	{
+		$this->throws(ContainerException::class, 'frozen');
+
+		$container = new Container();
+		$container->scope();
+		$container->add('new-entry', stdClass::class);
+	}
+
+	public function testScopeHasOwnLocalEntries(): void
+	{
+		$container = new Container();
+		$scope = $container->scope();
+		$scope->add('request', new stdClass());
+
+		$this->assertSame(true, $scope->has('request'));
+		$this->assertSame(false, $container->has('request'));
+	}
+
+	public function testScopeStartsEmptyEveryTime(): void
+	{
+		$container = new Container();
+		$scope1 = $container->scope();
+		$scope1->add('request', new stdClass());
+		$scope2 = $container->scope();
+
+		$this->assertSame(true, $scope1->has('request'));
+		$this->assertSame(false, $scope2->has('request'));
+	}
+
+	public function testScopeRebindsContainerEntriesToItself(): void
+	{
+		$container = new Container();
+		$scope = $container->scope();
+
+		$this->assertSame($container, $container->get(Container::class));
+		$this->assertSame($container, $container->get(ContainerInterface::class));
+		$this->assertSame($scope, $scope->get(Container::class));
+		$this->assertSame($scope, $scope->get(ContainerInterface::class));
+	}
+
+	public function testRootSharedLifetimeIsReusedAcrossScopes(): void
+	{
+		$container = new Container();
+		$container->add('service', fn() => new stdClass())->shared();
+		$scope1 = $container->scope();
+		$scope2 = $container->scope();
+		$service1 = $scope1->get('service');
+		$service2 = $scope2->get('service');
+
+		$this->assertSame(true, $service1 === $service2);
+	}
+
+	public function testRootScopedLifetimeCreatesOneInstancePerScope(): void
+	{
+		$container = new Container();
+		$container->add('service', fn() => new stdClass())->scoped();
+		$scope1 = $container->scope();
+		$scope2 = $container->scope();
+		$service11 = $scope1->get('service');
+		$service12 = $scope1->get('service');
+		$service2 = $scope2->get('service');
+
+		$this->assertSame(true, $service11 === $service12);
+		$this->assertSame(false, $service11 === $service2);
+	}
+
+	public function testRootTransientLifetimeStaysTransientInScope(): void
+	{
+		$container = new Container();
+		$container->add('service', fn() => new stdClass())->transient();
+		$scope = $container->scope();
+		$service1 = $scope->get('service');
+		$service2 = $scope->get('service');
+
+		$this->assertSame(false, $service1 === $service2);
+	}
+
+	public function testSharedServicesResolveInOwnerContext(): void
+	{
+		$container = new Container();
+		$container->add('name', 'root')->value();
+		$container->add('service', fn(Container $resolvedContainer): string => $resolvedContainer->get('name'));
+		$scope = $container->scope();
+		$scope->add('name', 'scope')->value();
+
+		$this->assertSame('root', $scope->get('service'));
+	}
+
+	public function testScopedServicesResolveInRequesterContext(): void
+	{
+		$container = new Container();
+		$container->add('name', 'root')->value();
+		$container
+			->add('service', fn(Container $resolvedContainer): string => $resolvedContainer->get('name'))
+			->scoped();
+		$scope = $container->scope();
+		$scope->add('name', 'scope')->value();
+
+		$this->assertSame('scope', $scope->get('service'));
+	}
+
 	public function testFetchEntriesList(): void
 	{
 		$container = new Container();

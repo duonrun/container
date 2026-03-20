@@ -9,6 +9,9 @@
 - `Entry` now uses explicit lifetimes with `shared()`, `scoped()`, `transient()`, and `lifetime(...)`.
 - `Entry::asIs()` was renamed to `Entry::value()`.
 - `Entry::reify()` was removed.
+- Added `Container::scope()` for isolated per-unit-of-work containers.
+- The root container now freezes internal structural mutation after the first `scope()` call.
+- Shared entries resolve in definition-owner context, scoped and transient entries resolve in requester context.
 
 ## [0.2.0](https://github.com/duonrun/container/releases/tag/0.2.0) (2026-02-21)
 

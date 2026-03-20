@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Duon\Container;
 
 use Closure;
+use Duon\Container\Exception\ContainerException;
 use Duon\Container\Exception\NotFoundException;
 use Duon\Wire\CallableResolver;
 use Duon\Wire\Creator;
@@ -22,6 +23,7 @@ class Container implements WireContainer
 {
 	protected Creator $creator;
 	protected readonly ?PsrContainer $wrappedContainer;
+	protected bool $frozen = false;
 
 	/** @psalm-var EntryArray */
 	protected array $entries = [];
@@ -37,6 +39,7 @@ class Container implements WireContainer
 		?PsrContainer $container = null,
 		protected readonly string $tag = '',
 		protected readonly ?Container $parent = null,
+		protected readonly bool $isScope = false,
 	) {
 		if ($container) {
 			$this->wrappedContainer = $container;
@@ -48,6 +51,18 @@ class Container implements WireContainer
 		}
 		$this->add(Container::class, $this);
 		$this->creator = new Creator($this);
+	}
+
+	public function scope(): Container
+	{
+		$root = $this->root();
+		$root->frozen = true;
+
+		return new self(
+			autowire: $root->autowire,
+			parent: $root,
+			isScope: true,
+		);
 	}
 
 	#[Override]
@@ -83,20 +98,21 @@ class Container implements WireContainer
 				return $this->instances[$id];
 			}
 
-			$entry = $this->entries[$id] ?? null;
+			$resolved = $this->findEntry($id);
 
-			if ($entry) {
-				return $this->resolveEntry($entry, $id);
+			if ($resolved !== null) {
+				return $this->resolveEntry(
+					entryOwner: $resolved[0],
+					entry: $resolved[1],
+					id: $id,
+					requester: $this,
+				);
 			}
 
-			if ($this->wrappedContainer?->has($id)) {
-				return $this->wrappedContainer->get($id);
-			}
+			$wrappedContainer = $this->root()->wrappedContainer;
 
-			// We are in a tag. See if the $id can be resolved by the parent
-			// be registered on the root.
-			if ($this->parent) {
-				return $this->parent->get($id);
+			if ($wrappedContainer?->has($id)) {
+				return $wrappedContainer->get($id);
 			}
 
 			// Autowiring: $id does not exists as an entry in the container
@@ -130,6 +146,7 @@ class Container implements WireContainer
 		string $id,
 		mixed $value = null,
 	): Entry {
+		$this->assertMutable();
 		$entry = new Entry($id, $value ?? $id);
 		$this->entries[$id] = $entry;
 		unset($this->instances[$id]);
@@ -140,6 +157,7 @@ class Container implements WireContainer
 	public function addEntry(
 		Entry $entry,
 	): Entry {
+		$this->assertMutable();
 		$this->entries[$entry->id] = $entry;
 		unset($this->instances[$entry->id]);
 
@@ -184,30 +202,41 @@ class Container implements WireContainer
 		throw new NotFoundException('Cannot instantiate ' . $id);
 	}
 
-	protected function callAndCache(Entry $entry, mixed $value, string $id): mixed
-	{
-		foreach ($entry->getCalls() as $call) {
-			$methodToResolve = $call->method;
-
-			/** @psalm-var callable */
-			$callable = [$value, $methodToResolve];
-			$args = (new CallableResolver($this->creator))->resolve($callable, $call->args);
-			$callable(...$args);
-		}
-
-		if ($entry->getLifetime() !== Lifetime::Transient) {
-			$this->instances[$id] = $value;
-		}
-
-		return $value;
-	}
-
-	protected function resolveEntry(Entry $entry, string $id): mixed
+	protected function resolveEntry(Container $entryOwner, Entry $entry, string $id, Container $requester): mixed
 	{
 		if ($entry->shouldReturnValue()) {
 			return $entry->definition();
 		}
 
+		[$cacheContainer, $resolutionContext] = $this->resolutionContainers($entry, $entryOwner, $requester);
+
+		if ($cacheContainer !== null && array_key_exists($id, $cacheContainer->instances)) {
+			return $cacheContainer->instances[$id];
+		}
+
+		$result = $this->materialize($entry, $resolutionContext);
+
+		if ($cacheContainer !== null) {
+			$cacheContainer->instances[$id] = $result;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * @return array{0: null|Container, 1: Container}
+	 */
+	protected function resolutionContainers(Entry $entry, Container $entryOwner, Container $requester): array
+	{
+		return match ($entry->getLifetime()) {
+			Lifetime::Shared => [$entryOwner, $entryOwner],
+			Lifetime::Scoped => [$requester, $requester],
+			Lifetime::Transient => [null, $requester],
+		};
+	}
+
+	protected function materialize(Entry $entry, Container $context): mixed
+	{
 		/** @var mixed - the current value, instantiated or definition */
 		$value = $entry->definition();
 
@@ -220,41 +249,31 @@ class Container implements WireContainer
 					// Don't autowire if $args are given
 					if ($args instanceof Closure) {
 						/** @psalm-var array<string, mixed> */
-						$args = $args(...(new CallableResolver($this->creator))->resolve($args));
+						$args = $args(...(new CallableResolver($context->creator))->resolve($args));
 
-						return $this->callAndCache(
-							$entry,
-							$this->creator->create($value, $args),
-							$id,
-						);
+						return $this->applyCalls($entry, $context->creator->create($value, $args), $context);
 					}
 
-					return $this->callAndCache(
+					return $this->applyCalls(
 						$entry,
-						$this->creator->create(
+						$context->creator->create(
 							$value,
 							predefinedArgs: $args,
 							constructor: $constructor ?? '',
 						),
-						$id,
+						$context,
 					);
 				}
 
-				return $this->callAndCache(
+				return $this->applyCalls(
 					$entry,
-					$this->creator->create($value, constructor: $constructor ?? ''),
-					$id,
+					$context->creator->create($value, constructor: $constructor ?? ''),
+					$context,
 				);
 			}
 
-			if ($this->has($value)) {
-				$result = $this->get($value);
-
-				if ($entry->getLifetime() !== Lifetime::Transient) {
-					$this->instances[$id] = $result;
-				}
-
-				return $result;
+			if ($context->has($value)) {
+				return $context->get($value);
 			}
 		}
 
@@ -262,7 +281,7 @@ class Container implements WireContainer
 			$args = $entry->getArgs();
 
 			if (is_null($args)) {
-				$args = (new CallableResolver($this->creator))->resolve($value);
+				$args = (new CallableResolver($context->creator))->resolve($value);
 			} elseif ($args instanceof Closure) {
 				/** @var array<string, mixed> */
 				$args = $args();
@@ -271,7 +290,7 @@ class Container implements WireContainer
 			/** @var mixed */
 			$result = $value(...$args);
 
-			return $this->callAndCache($entry, $result, $id);
+			return $this->applyCalls($entry, $result, $context);
 		}
 
 		if (is_object($value)) {
@@ -279,6 +298,20 @@ class Container implements WireContainer
 		}
 
 		throw new NotFoundException('Unresolvable id: ' . (string) $value);
+	}
+
+	protected function applyCalls(Entry $entry, mixed $value, Container $context): mixed
+	{
+		foreach ($entry->getCalls() as $call) {
+			$methodToResolve = $call->method;
+
+			/** @psalm-var callable */
+			$callable = [$value, $methodToResolve];
+			$args = (new CallableResolver($context->creator))->resolve($callable, $call->args);
+			$callable(...$args);
+		}
+
+		return $value;
 	}
 
 	/** @return array{Container, Entry}|null */
@@ -291,5 +324,28 @@ class Container implements WireContainer
 		}
 
 		return $this->parent?->findEntry($id);
+	}
+
+	protected function root(): Container
+	{
+		$container = $this;
+
+		while ($container->parent !== null) {
+			$container = $container->parent;
+		}
+
+		return $container;
+	}
+
+	protected function assertMutable(): void
+	{
+		if ($this->isRoot() && $this->frozen) {
+			throw new ContainerException('The root container is frozen after scope() was called');
+		}
+	}
+
+	protected function isRoot(): bool
+	{
+		return $this->parent === null && $this->tag === '' && !$this->isScope;
 	}
 }

@@ -24,6 +24,22 @@ $container->add(RequestContext::class)->scoped();
 $container->add(Builder::class)->transient();
 ```
 
+## Scope mode
+
+Use `scope()` to create an isolated container for one unit of work:
+
+```php
+$root = new Container();
+$root->add('app-name', 'duon')->value();
+$root->add('global-service', GlobalService::class)->shared();
+$root->add('request-service', RequestService::class)->scoped();
+
+$scope = $root->scope();
+$scope->add(Request::class, $request)->value();
+```
+
+After the first `scope()` call, the root container is frozen and no longer accepts structural mutations.
+
 ## License
 
 This project is licensed under the [MIT license](LICENSE.md).
