@@ -40,20 +40,24 @@
 		]
 	},
 	"scripts": {
-		"test": [
-			"composer docstest",
-			"./vendor/bin/phpunit --testdox --no-coverage --colors=always"
-		],
+		"test": "./vendor/bin/phpunit --testdox --no-coverage --colors=always",
+		"docstest": "./vendor/bin/docs-test-runner ./docs/code",
 		"types": "./vendor/bin/psalm --no-cache",
+		"mdlint": "markdownlint-cli2 README.md CHANGELOG.md LICENSE.md docs/",
+		"lint": [
+			"./vendor/bin/mago fmt --check",
+			"./vendor/bin/mago lint"
+		],
 		"coverage": [
-			"./vendor/bin/phpunit --testdox --coverage-text --coverage-php=coverage/cover.php --colors=always",
-			"./vendor/bin/coverlyzer coverage/cover.php"
+			"./vendor/bin/phpunit --testdox --path-coverage --coverage-text --coverage-php=.coverage/cover.php --colors=always",
+			"./vendor/bin/coverlyzer .coverage/cover.php"
 		],
 		"ci": [
+			"composer lint",
 			"composer docstest",
 			"composer coverage",
-			"composer types"
-		],
-		"docstest": "./vendor/bin/docs-test-runner ./docs/code"
+			"composer types",
+			"composer mdlint"
+		]
 	}
 }
