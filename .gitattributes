@@ -2,8 +2,8 @@
 * text=lf
 
 /.* export-ignore
+/*.toml export-ignore
 /*.xml export-ignore
 /*.yml export-ignore
 /docs/ export-ignore
 /tests/ export-ignore
-/bench/ export-ignore
