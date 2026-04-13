@@ -20,11 +20,11 @@
 	"homepage": "https://duon.run/container",
 	"require": {
 		"php": "^8.5",
-		"duon/wire": "^0.4",
+		"duon/wire": "dev-main",
 		"psr/container": "^2.0"
 	},
 	"require-dev": {
-		"duon/dev": "^2.5"
+		"duon/dev": "^3.0"
 	},
 	"autoload": {
 		"psr-4": {
