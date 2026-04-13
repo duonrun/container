@@ -6,7 +6,9 @@ namespace Duon\Container\Tests\Fixtures;
 
 class TestClass implements TestInterface
 {
-	public function __construct(public string $value = '') {}
+	public function __construct(
+		public string $value = '',
+	) {}
 
 	public function __toString(): string
 	{

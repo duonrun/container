@@ -6,5 +6,7 @@ namespace Duon\Container\Tests\Fixtures;
 
 class TestClassWithConstructor
 {
-	public function __construct(public readonly TestClass $tc) {}
+	public function __construct(
+		public readonly TestClass $tc,
+	) {}
 }

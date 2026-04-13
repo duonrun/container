@@ -533,7 +533,9 @@ final class ContainerTest extends TestCase
 	{
 		$container = new Container();
 		$container->add('name', 'root')->value();
-		$container->add('service', fn(Container $resolvedContainer): string => $resolvedContainer->get('name'));
+		$container->add('service', fn(Container $resolvedContainer): string => $resolvedContainer->get(
+			'name',
+		));
 		$scope = $container->scope();
 		$scope->add('name', 'scope')->value();
 
@@ -653,12 +655,15 @@ final class ContainerTest extends TestCase
 		$entryCon = $container->tag('tag')->entry('container');
 
 		$this->assertSame(['class', 'container'], $container->tag('tag')->entries());
-		$this->assertSame([
-			'Psr\Container\ContainerInterface',
-			'Duon\Container\Container',
-			'class',
-			'container',
-		], $container->tag('tag')->entries(true));
+		$this->assertSame(
+			[
+				'Psr\Container\ContainerInterface',
+				'Duon\Container\Container',
+				'class',
+				'container',
+			],
+			$container->tag('tag')->entries(true),
+		);
 		$this->assertSame(true, $obj instanceof stdClass);
 		$this->assertSame(stdClass::class, $entry->definition());
 		$this->assertSame(Container::class, $entryCon->definition());
@@ -675,7 +680,10 @@ final class ContainerTest extends TestCase
 		$container = new Container();
 		$container->tag('tag')->add(TestClassApp::class);
 
-		$this->assertSame(TestClassApp::class, $container->tag('tag')->entry(TestClassApp::class)->definition());
+		$this->assertSame(
+			TestClassApp::class,
+			$container->tag('tag')->entry(TestClassApp::class)->definition(),
+		);
 	}
 
 	public function testRootTagCreationFailsAfterFirstScope(): void
@@ -690,7 +698,10 @@ final class ContainerTest extends TestCase
 	public function testScopeTagInheritsRootTagDefinitions(): void
 	{
 		$container = new Container();
-		$container->tag('api')->add('service', fn() => new stdClass())->scoped();
+		$container
+			->tag('api')
+			->add('service', fn() => new stdClass())
+			->scoped();
 		$scope = $container->scope();
 		$tag = $scope->tag('api');
 		$service1 = $tag->get('service');
@@ -703,7 +714,10 @@ final class ContainerTest extends TestCase
 	public function testScopeTagsKeepOwnScopedCaches(): void
 	{
 		$container = new Container();
-		$container->tag('api')->add('service', fn() => new stdClass())->scoped();
+		$container
+			->tag('api')
+			->add('service', fn() => new stdClass())
+			->scoped();
 		$scope1 = $container->scope();
 		$scope2 = $container->scope();
 		$service1 = $scope1->tag('api')->get('service');
