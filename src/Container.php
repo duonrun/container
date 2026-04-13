@@ -102,9 +102,10 @@ class Container implements WireContainer
 			return $keys;
 		}
 
-		return array_values(array_filter($keys, function ($item) {
-			return $item !== PsrContainer::class && !is_subclass_of($item, PsrContainer::class);
-		}));
+		return array_values(array_filter(
+			$keys,
+			static fn($item) => $item !== PsrContainer::class && !is_subclass_of($item, PsrContainer::class),
+		));
 	}
 
 	public function entry(string $id): Entry

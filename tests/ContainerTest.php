@@ -208,9 +208,10 @@ final class ContainerTest extends TestCase
 	{
 		$container = new Container();
 		$container->add(TestClassApp::class, new TestClassApp('chuck'));
-		$container->add('class', function (TestClassApp $app) {
-			return new TestClassContainerArgs(new TestClass(), 'chuck', $app);
-		});
+		$container->add(
+			'class',
+			static fn(TestClassApp $app) => new TestClassContainerArgs(new TestClass(), 'chuck', $app),
+		);
 		$instance = $container->get('class');
 
 		$this->assertSame(true, $instance->tc instanceof TestClass);
@@ -331,9 +332,15 @@ final class ContainerTest extends TestCase
 	{
 		$container = new Container();
 		$container->add(TestClassApp::class, new TestClassApp('chuck'));
-		$container->add('class', function (TestClassApp $app, string $name, TestClass $tc) {
-			return new TestClassContainerArgs($tc, $name, $app);
-		})->args(app: new TestClassApp('chuck'), tc: new TestClass(), name: 'chuck');
+		$container->add(
+			'class',
+			static fn(TestClassApp $app, string $name, TestClass $tc) => new TestClassContainerArgs(
+				$tc,
+				$name,
+				$app,
+			),
+		)
+			->args(app: new TestClassApp('chuck'), tc: new TestClass(), name: 'chuck');
 		$instance = $container->get('class');
 
 		$this->assertSame(true, $instance->tc instanceof TestClass);
@@ -345,13 +352,11 @@ final class ContainerTest extends TestCase
 	{
 		$container = new Container();
 		$container->add(TestClassApp::class, new TestClassApp('chuck'));
-		$container->add('class', TestClassContainerArgs::class)->args(function (TestClassApp $app) {
-			return [
-				'test' => 'chuck',
-				'tc' => new TestClass(),
-				'app' => $app,
-			];
-		});
+		$container->add('class', TestClassContainerArgs::class)->args(static fn(TestClassApp $app) => [
+			'test' => 'chuck',
+			'tc' => new TestClass(),
+			'app' => $app,
+		]);
 		$instance = $container->get('class');
 
 		$this->assertSame(true, $instance instanceof TestClassContainerArgs);
@@ -363,15 +368,19 @@ final class ContainerTest extends TestCase
 	public function testResolveClosureClassWithArgsClosure(): void
 	{
 		$container = new Container();
-		$container->add('class', function (TestClassApp $app, string $name, TestClass $tc) {
-			return new TestClassContainerArgs($tc, $name, $app);
-		})->args(function () {
-			return [
+		$container->add(
+			'class',
+			static fn(TestClassApp $app, string $name, TestClass $tc) => new TestClassContainerArgs(
+				$tc,
+				$name,
+				$app,
+			),
+		)
+			->args(static fn() => [
 				'app' => new TestClassApp('chuck'),
 				'tc' => new TestClass(),
 				'name' => 'chuck',
-			];
-		});
+			]);
 		$instance = $container->get('class');
 
 		$this->assertSame(true, $instance instanceof TestClassContainerArgs);
@@ -385,9 +394,7 @@ final class ContainerTest extends TestCase
 		$this->throws(ContainerException::class, 'Container entry arguments');
 
 		$container = new Container();
-		$container->add('class', function () {
-			return new stdClass();
-		})->args('chuck', 13);
+		$container->add('class', static fn() => new stdClass())->args('chuck', 13);
 	}
 
 	public function testRejectSingleUnnamedArgWithWrongType(): void
@@ -395,9 +402,7 @@ final class ContainerTest extends TestCase
 		$this->throws(ContainerException::class, 'Container entry arguments');
 
 		$container = new Container();
-		$container->add('class', function () {
-			return new stdClass();
-		})->args('chuck');
+		$container->add('class', static fn() => new stdClass())->args('chuck');
 	}
 
 	public function testSharedLifetimeCachesObjectsByDefault(): void
@@ -413,8 +418,8 @@ final class ContainerTest extends TestCase
 	public function testValue(): void
 	{
 		$container = new Container();
-		$container->add('closure1', fn() => 'called');
-		$container->add('closure2', fn() => 'notcalled')->value();
+		$container->add('closure1', static fn() => 'called');
+		$container->add('closure2', static fn() => 'notcalled')->value();
 		$value1 = $container->get('closure1');
 		$value2 = $container->get('closure2');
 
@@ -495,7 +500,7 @@ final class ContainerTest extends TestCase
 	public function testRootSharedLifetimeIsReusedAcrossScopes(): void
 	{
 		$container = new Container();
-		$container->add('service', fn() => new stdClass())->shared();
+		$container->add('service', static fn() => new stdClass())->shared();
 		$scope1 = $container->scope();
 		$scope2 = $container->scope();
 		$service1 = $scope1->get('service');
@@ -507,7 +512,7 @@ final class ContainerTest extends TestCase
 	public function testRootScopedLifetimeCreatesOneInstancePerScope(): void
 	{
 		$container = new Container();
-		$container->add('service', fn() => new stdClass())->scoped();
+		$container->add('service', static fn() => new stdClass())->scoped();
 		$scope1 = $container->scope();
 		$scope2 = $container->scope();
 		$service11 = $scope1->get('service');
@@ -521,7 +526,7 @@ final class ContainerTest extends TestCase
 	public function testRootTransientLifetimeStaysTransientInScope(): void
 	{
 		$container = new Container();
-		$container->add('service', fn() => new stdClass())->transient();
+		$container->add('service', static fn() => new stdClass())->transient();
 		$scope = $container->scope();
 		$service1 = $scope->get('service');
 		$service2 = $scope->get('service');
@@ -533,7 +538,7 @@ final class ContainerTest extends TestCase
 	{
 		$container = new Container();
 		$container->add('name', 'root')->value();
-		$container->add('service', fn(Container $resolvedContainer): string => $resolvedContainer->get(
+		$container->add('service', static fn(Container $resolvedContainer): string => $resolvedContainer->get(
 			'name',
 		));
 		$scope = $container->scope();
@@ -547,7 +552,9 @@ final class ContainerTest extends TestCase
 		$container = new Container();
 		$container->add('name', 'root')->value();
 		$container
-			->add('service', fn(Container $resolvedContainer): string => $resolvedContainer->get('name'))
+			->add('service', static fn(Container $resolvedContainer): string => $resolvedContainer->get(
+				'name',
+			))
 			->scoped();
 		$scope = $container->scope();
 		$scope->add('name', 'scope')->value();
@@ -595,7 +602,7 @@ final class ContainerTest extends TestCase
 	public function testResetClearsScopeLocalDefinitionsAndCaches(): void
 	{
 		$container = new Container();
-		$container->add('service', fn() => new stdClass())->scoped();
+		$container->add('service', static fn() => new stdClass())->scoped();
 		$scope = $container->scope();
 		$scope->add('local-value', 'value')->value();
 		$service1 = $scope->get('service');
@@ -700,7 +707,7 @@ final class ContainerTest extends TestCase
 		$container = new Container();
 		$container
 			->tag('api')
-			->add('service', fn() => new stdClass())
+			->add('service', static fn() => new stdClass())
 			->scoped();
 		$scope = $container->scope();
 		$tag = $scope->tag('api');
@@ -716,7 +723,7 @@ final class ContainerTest extends TestCase
 		$container = new Container();
 		$container
 			->tag('api')
-			->add('service', fn() => new stdClass())
+			->add('service', static fn() => new stdClass())
 			->scoped();
 		$scope1 = $container->scope();
 		$scope2 = $container->scope();
