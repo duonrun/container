@@ -34,10 +34,7 @@
 	"autoload-dev": {
 		"psr-4": {
 			"Duon\\Container\\Tests\\": "tests"
-		},
-		"files": [
-			"tests/Fixtures/globalTestSymbols.php"
-		]
+		}
 	},
 	"scripts": {
 		"test": "./vendor/bin/phpunit --testdox --no-coverage --colors=always",
