@@ -17,6 +17,8 @@ use Duon\Container\Tests\Fixtures\TestClassContainerSingleArg;
 use Duon\Container\Tests\Fixtures\TestClassWithConstructor;
 use Duon\Container\Tests\Fixtures\TestContainer;
 use Psr\Container\ContainerInterface;
+use ReflectionProperty;
+use RuntimeException;
 use stdClass;
 
 final class ContainerTest extends TestCase
@@ -248,6 +250,17 @@ final class ContainerTest extends TestCase
 
 		$container = new Container();
 		$container->get(GdImage::class);
+	}
+
+	public function testGetWrapsUnexpectedThrowableInContainerException(): void
+	{
+		$this->throws(ContainerException::class, 'Unresolvable id: broken - boom');
+
+		$container = new Container();
+		$container->add('broken', static function (): never {
+			throw new RuntimeException('boom');
+		});
+		$container->get('broken');
 	}
 
 	public function testGettingNonExistentClassFails(): void
@@ -637,6 +650,22 @@ final class ContainerTest extends TestCase
 		$container->reset();
 
 		$this->assertSame(true, $container->has('service'));
+	}
+
+	public function testResetSkipsNonScopeTagsInScopeTagMap(): void
+	{
+		$container = new Container();
+		$rootTag = $container->tag('api');
+		$rootTag->add('shared', 'root')->value();
+		$scope = $container->scope();
+		$tagsProperty = new ReflectionProperty(Container::class, 'tags');
+		/** @var array<non-empty-string, Container> $scopeTags */
+		$scopeTags = ['injected-root-tag' => $rootTag];
+		$tagsProperty->setValue($scope, $scopeTags);
+
+		$scope->reset();
+
+		$this->assertSame('root', $rootTag->get('shared'));
 	}
 
 	public function testFetchEntriesList(): void
