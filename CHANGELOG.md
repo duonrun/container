@@ -17,7 +17,7 @@
 - Added `Resettable` and scope-local `Container::reset()` cleanup support.
 - Scope reset now clears local entries/caches and resets used resettable services (including scope tags).
 
-## [0.2.0](https://github.com/duonrun/container/releases/tag/0.2.0) (2026-02-21)
+## [0.2.0](https://github.com/duoncode/container/releases/tag/0.2.0) (2026-02-21)
 
 Project renamed from duon/registry to duon/container.
 
@@ -30,7 +30,7 @@ Codename: Jonas
 - Main class renamed from `Registry` to `Container`
 - Parameter `includeRegistry` renamed to `includeContainer`
 
-## [0.1.0](https://github.com/duonrun/registry/releases/tag/0.1.0) (2026-01-30)
+## [0.1.0](https://github.com/duoncode/registry/releases/tag/0.1.0) (2026-01-30)
 
 Initial release.
 
