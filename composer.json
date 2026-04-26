@@ -20,7 +20,7 @@
 	"homepage": "https://duon.sh/container",
 	"require": {
 		"php": "^8.5",
-		"duon/wire": "dev-main",
+		"duon/wire": "^0.5.0",
 		"psr/container": "^2.0"
 	},
 	"require-dev": {
