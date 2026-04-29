@@ -16,27 +16,23 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface as PsrContainer;
 use Throwable;
 
-/**
- * @psalm-api
- *
- * @psalm-type EntryArray = array<never, never>|array<string, Entry>
- */
+/** @psalm-api */
 class Container implements WireContainer
 {
 	protected Creator $creator;
 	protected readonly ?PsrContainer $wrappedContainer;
 	protected bool $sealed = false;
 
-	/** @psalm-var EntryArray */
+	/** @var array<string, Entry> */
 	protected array $entries = [];
 
-	/** @psalm-var array<never, never>|array<string, mixed> */
+	/** @var array<string, mixed> */
 	protected array $instances = [];
 
-	/** @psalm-var array<never, never>|array<non-empty-string, self> */
+	/** @var array<non-empty-string, self> */
 	protected array $tags = [];
 
-	/** @psalm-var array<int, Resettable> */
+	/** @var array<int, Resettable> */
 	protected array $usedResettables = [];
 
 	public function __construct(
@@ -93,7 +89,7 @@ class Container implements WireContainer
 		);
 	}
 
-	/** @psalm-return list<string> */
+	/** @return list<string> */
 	public function entries(bool $includeContainer = false): array
 	{
 		$keys = array_keys($this->entries);
@@ -175,7 +171,7 @@ class Container implements WireContainer
 	}
 
 	/**
-	 * @psalm-param non-empty-string $id
+	 * @param non-empty-string $id
 	 */
 	public function add(
 		string $id,
@@ -199,7 +195,7 @@ class Container implements WireContainer
 		return $entry;
 	}
 
-	/** @psalm-param non-empty-string $tag */
+	/** @param non-empty-string $tag */
 	public function tag(string $tag): Container
 	{
 		if (isset($this->tags[$tag])) {
@@ -234,7 +230,7 @@ class Container implements WireContainer
 		$entry = $this->entries[$id] ?? null;
 
 		if ($entry) {
-			/** @var mixed */
+			/** @var mixed $value */
 			$value = $entry->definition();
 
 			if (is_string($value)) {
@@ -305,7 +301,7 @@ class Container implements WireContainer
 
 	protected function materialize(Entry $entry, Container $context): mixed
 	{
-		/** @var mixed - the current value, instantiated or definition */
+		/** @var mixed $value */
 		$value = $entry->definition();
 
 		if (is_string($value)) {
@@ -316,7 +312,6 @@ class Container implements WireContainer
 				if (isset($args)) {
 					// Don't autowire if $args are given
 					if ($args instanceof Closure) {
-						/** @psalm-var array<string, mixed> */
 						$args = $args(...new CallableResolver($context->creator)->resolve($args));
 
 						return $this->applyCalls($entry, $context->creator->create($value, $args), $context);
@@ -351,14 +346,10 @@ class Container implements WireContainer
 			if (is_null($args)) {
 				$args = new CallableResolver($context->creator)->resolve($value);
 			} elseif ($args instanceof Closure) {
-				/** @var array<string, mixed> */
 				$args = $args();
 			}
 
-			/** @var mixed */
-			$result = $value(...$args);
-
-			return $this->applyCalls($entry, $result, $context);
+			return $this->applyCalls($entry, $value(...$args), $context);
 		}
 
 		if (is_object($value)) {
@@ -373,7 +364,7 @@ class Container implements WireContainer
 		foreach ($entry->getCalls() as $call) {
 			$methodToResolve = $call->method;
 
-			/** @psalm-var callable */
+			/** @var callable */
 			$callable = [$value, $methodToResolve];
 			$args = new CallableResolver($context->creator)->resolve($callable, $call->args);
 			$callable(...$args);

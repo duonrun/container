@@ -659,7 +659,6 @@ final class ContainerTest extends TestCase
 		$rootTag->add('shared', 'root')->value();
 		$scope = $container->scope();
 		$tagsProperty = new ReflectionProperty(Container::class, 'tags');
-		/** @var array<non-empty-string, Container> $scopeTags */
 		$scopeTags = ['injected-root-tag' => $rootTag];
 		$tagsProperty->setValue($scope, $scopeTags);
 

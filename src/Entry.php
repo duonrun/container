@@ -8,26 +8,22 @@ use Closure;
 use Duon\Container\Exception\ContainerException;
 use Duon\Wire\Call;
 
-/**
- * @psalm-api
- *
- * @psalm-type Args array<string|mixed>|Closure(): array<string|mixed>
- */
+/** @psalm-api */
 class Entry
 {
-	/** @psalm-var null|Args */
+	/** @var array<array-key, mixed>|Closure(mixed...): array<array-key, mixed>|null */
 	protected array|Closure|null $args = null;
 
 	protected ?string $constructor = null;
 	protected bool $value = false;
 	protected Lifetime $lifetime = Lifetime::Shared;
 
-	/** @psalm-var list<Call> */
+	/** @var list<Call> */
 	protected array $calls = [];
 
 	/**
-	 * @psalm-param non-empty-string $id
-	 * */
+	 * @param non-empty-string $id
+	 */
 	public function __construct(
 		public readonly string $id,
 		protected mixed $definition,
@@ -78,10 +74,9 @@ class Entry
 
 		if ($numArgs === 1) {
 			if (is_string(array_key_first($args))) {
-				/** @psalm-var Args */
 				$this->args = $args;
 			} elseif (is_array($args[0]) || $args[0] instanceof Closure) {
-				/** @psalm-var Args */
+				/** @var array<array-key, mixed>|Closure(mixed...): array<array-key, mixed> */
 				$this->args = $args[0];
 			} else {
 				throw new ContainerException(
@@ -103,6 +98,7 @@ class Entry
 		return $this;
 	}
 
+	/** @return array<array-key, mixed>|Closure(mixed...): array<array-key, mixed>|null */
 	public function getArgs(): array|Closure|null
 	{
 		return $this->args;
@@ -127,7 +123,7 @@ class Entry
 		return $this;
 	}
 
-	/** @psalm-return list<Call> */
+	/** @return list<Call> */
 	public function getCalls(): array
 	{
 		return $this->calls;
