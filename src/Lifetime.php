@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duon\Container;
+namespace Celemas\Container;
 
 enum Lifetime
 {

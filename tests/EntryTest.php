@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duon\Container\Tests;
+namespace Celemas\Container\Tests;
 
-use Duon\Container\Entry;
-use Duon\Container\Lifetime;
+use Celemas\Container\Entry;
+use Celemas\Container\Lifetime;
 use stdClass;
 
 final class EntryTest extends TestCase

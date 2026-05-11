@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Duon\Container\Tests;
+namespace Celemas\Container\Tests;
 
-use Duon\Container\Container;
+use Celemas\Container\Container;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
 /**

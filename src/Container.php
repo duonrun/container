@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Duon\Container;
+namespace Celemas\Container;
 
+use Celemas\Container\Exception\ContainerException;
+use Celemas\Container\Exception\NotFoundException;
+use Celemas\Wire\CallableResolver;
+use Celemas\Wire\Creator;
+use Celemas\Wire\Exception\WireException;
+use Celemas\Wire\WireContainer;
 use Closure;
-use Duon\Container\Exception\ContainerException;
-use Duon\Container\Exception\NotFoundException;
-use Duon\Wire\CallableResolver;
-use Duon\Wire\Creator;
-use Duon\Wire\Exception\WireException;
-use Duon\Wire\WireContainer;
 use Override;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface as PsrContainer;

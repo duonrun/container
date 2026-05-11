@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Duon\Container\Tests\Fixtures;
+namespace Celemas\Container\Tests\Fixtures;
 
-use Duon\Container\Container;
-use Duon\Wire\Call;
+use Celemas\Container\Container;
+use Celemas\Wire\Call;
 
 #[Call('method1'), Call('method2', arg2: 'arg2', arg1: 'arg1')]
 class TestClassCall

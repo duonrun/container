@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Duon\Container;
+namespace Celemas\Container;
 
+use Celemas\Container\Exception\ContainerException;
+use Celemas\Wire\Call;
 use Closure;
-use Duon\Container\Exception\ContainerException;
-use Duon\Wire\Call;
 
 /** @psalm-api */
 class Entry

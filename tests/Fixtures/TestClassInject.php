@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Duon\Container\Tests\Fixtures;
+namespace Celemas\Container\Tests\Fixtures;
 
-use Duon\Container\Container;
-use Duon\Wire\Call;
-use Duon\Wire\Inject;
+use Celemas\Container\Container;
+use Celemas\Wire\Call;
+use Celemas\Wire\Inject;
 
 #[Call('callThis')]
 class TestClassInject

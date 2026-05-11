@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duon\Container\Tests\Fixtures;
+namespace Celemas\Container\Tests\Fixtures;
 
 class TestClass implements TestInterface
 {

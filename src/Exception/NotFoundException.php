@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Duon\Container\Exception;
+namespace Celemas\Container\Exception;
 
 use Psr\Container\NotFoundExceptionInterface;
 
