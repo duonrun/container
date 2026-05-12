@@ -46,9 +46,11 @@
 			"./vendor/bin/mago fmt --check",
 			"./vendor/bin/mago lint"
 		],
+		"coverage:test": "./vendor/bin/phpunit --testdox --path-coverage --coverage-text --coverage-php=.coverage/cover.php --colors=always",
+		"coverage:analyze": "./vendor/bin/coverlyzer .coverage/cover.php",
 		"coverage": [
-			"./vendor/bin/phpunit --testdox --path-coverage --coverage-text --coverage-php=.coverage/cover.php --colors=always",
-			"./vendor/bin/coverlyzer .coverage/cover.php"
+			"composer coverage:test",
+			"composer coverage:analyze"
 		],
 		"ci": [
 			"composer lint",
