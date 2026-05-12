@@ -1,10 +1,14 @@
 # Changelog
 
-## [Unreleased](https://github.com/celemas/container/compare/0.3.0...HEAD)
+## [Unreleased](https://github.com/celemas/container/compare/0.4.0...HEAD)
+
+No notable changes since the last release.
+
+## [0.4.0](https://github.com/celemas/container/releases/tag/0.4.0) (2026-05-12)
 
 ### Breaking Changes
 
-- Rename package metadata, root namespace, repository URLs, homepage, and contact email to Celemas.
+- Rename package metadata, root namespace, repository URLs, homepage, and author info.
 
 ## [0.3.0](https://github.com/celemas/container/releases/tag/0.3.0) (2026-04-26)
 
