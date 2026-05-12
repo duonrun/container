@@ -1,11 +1,10 @@
-# Duon Container
+# Celemas Container
 
 <!-- prettier-ignore-start -->
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/1c88bda8fa4c4b56897fd8930f42b1a1)](https://app.codacy.com/gh/duoncode/container/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
-[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/1c88bda8fa4c4b56897fd8930f42b1a1)](https://app.codacy.com/gh/duoncode/container/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
-[![Psalm coverage](https://shepherd.dev/github/duoncode/container/coverage.svg?)](https://shepherd.dev/github/duoncode/container)
-[![Psalm level](https://shepherd.dev/github/duoncode/container/level.svg?)](https://duon.sh/container)
+[![CI](https://github.com/celemas/container/actions/workflows/ci.yml/badge.svg)](https://github.com/celemas/container/actions)
+[![Psalm coverage](https://shepherd.dev/github/celemas/container/coverage.svg?)](https://shepherd.dev/github/celemas/container)
+[![Psalm level](https://shepherd.dev/github/celemas/container/level.svg?)](https://celemas.dev/container)
 <!-- prettier-ignore-end -->
 
 A PSR-11 compatible dependency injection container.
@@ -32,7 +31,7 @@ Use `scope()` to create an isolated container for one unit of work:
 
 ```php
 $root = new Container();
-$root->add('app-name', 'duon')->value();
+$root->add('app-name', 'celemas')->value();
 $root->add('global-service', GlobalService::class)->shared();
 $root->add('request-service', RequestService::class)->scoped();
 
@@ -45,7 +44,7 @@ $scope->reset();
 
 After the first `scope()` call, the root container is sealed and no longer accepts structural mutations. Scope tags can inherit pre-defined root tags while keeping their own local caches.
 
-Services that should be cleaned between scopes can implement `Duon\Container\Resettable` and will be reset during `$scope->reset()`.
+Services that should be cleaned between scopes can implement `Celemas\Container\Resettable` and will be reset during `$scope->reset()`.
 
 ## License
 
