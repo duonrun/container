@@ -24,7 +24,7 @@
 		"psr/container": "^2.0"
 	},
 	"require-dev": {
-		"celemas/dev": "^3.0"
+		"celemas/dev": "^4.1"
 	},
 	"autoload": {
 		"psr-4": {
@@ -40,7 +40,8 @@
 		"test": "./vendor/bin/phpunit --testdox --no-coverage --colors=always",
 		"docstest": "./vendor/bin/docs-test-runner ./docs/code",
 		"types": "./vendor/bin/psalm --no-cache",
-		"mdlint": "markdownlint-cli2 README.md CHANGELOG.md LICENSE.md docs/",
+		"docs:format": "npx prettier@3.6.2 --write --config ./docs/.prettierrc README.md CHANGELOG.md LICENSE.md docs/",
+		"docs:lint": "npx markdownlint-cli2@0.22.1 --config ./vendor/celemas/dev/config/markdownlint.jsonc README.md CHANGELOG.md LICENSE.md docs/",
 		"lint": [
 			"./vendor/bin/mago fmt --check",
 			"./vendor/bin/mago lint"
@@ -54,7 +55,7 @@
 			"composer docstest",
 			"composer coverage",
 			"composer types",
-			"composer mdlint"
+			"composer docs:lint"
 		]
 	}
 }
