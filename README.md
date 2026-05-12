@@ -1,10 +1,11 @@
 # Celemas Container
 
 <!-- prettier-ignore-start -->
+[![ci](https://github.com/celemas/container/actions/workflows/ci.yml/badge.svg)](https://github.com/celemas/container/actions)
+[![codecov](https://codecov.io/github/celemas/container/graph/badge.svg?token=2KNQOB4PND)](https://codecov.io/github/celemas/container)
+[![psalm coverage](https://shepherd.dev/github/celemas/container/coverage.svg?)](https://shepherd.dev/github/celemas/container)
+[![psalm level](https://shepherd.dev/github/celemas/container/level.svg?)](https://shepherd.dev/github/celemas/container)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
-[![CI](https://github.com/celemas/container/actions/workflows/ci.yml/badge.svg)](https://github.com/celemas/container/actions)
-[![Psalm coverage](https://shepherd.dev/github/celemas/container/coverage.svg?)](https://shepherd.dev/github/celemas/container)
-[![Psalm level](https://shepherd.dev/github/celemas/container/level.svg?)](https://celemas.dev/container)
 <!-- prettier-ignore-end -->
 
 A PSR-11 compatible dependency injection container.
