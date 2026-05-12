@@ -20,7 +20,7 @@
 	"homepage": "https://celemas.dev/container",
 	"require": {
 		"php": "^8.5",
-		"celemas/wire": "^0.5.0",
+		"celemas/wire": "^0.6.0",
 		"psr/container": "^2.0"
 	},
 	"require-dev": {
@@ -46,8 +46,8 @@
 			"./vendor/bin/mago fmt --check",
 			"./vendor/bin/mago lint"
 		],
-		"coverage:test": "./vendor/bin/phpunit --testdox --path-coverage --coverage-text --coverage-php=.coverage/cover.php --colors=always",
-		"coverage:analyze": "./vendor/bin/coverlyzer .coverage/cover.php",
+		"coverage:test": "php -d xdebug.mode=coverage ./vendor/bin/phpunit --testdox --path-coverage --colors=always",
+		"coverage:analyze": "./vendor/bin/coverlyzer .coverage/coverage.php",
 		"coverage": [
 			"composer coverage:test",
 			"composer coverage:analyze"
