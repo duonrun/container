@@ -1,10 +1,12 @@
 # Changelog
 
-## [Unreleased](https://github.com/duoncode/container/compare/0.3.0...HEAD)
+## [Unreleased](https://github.com/celemas/container/compare/0.3.0...HEAD)
 
-No changes yet.
+### Breaking Changes
 
-## [0.3.0](https://github.com/duoncode/container/releases/tag/0.3.0) (2026-04-26)
+- Rename package metadata, root namespace, repository URLs, homepage, and contact email to Celemas.
+
+## [0.3.0](https://github.com/celemas/container/releases/tag/0.3.0) (2026-04-26)
 
 ### Breaking
 
@@ -27,20 +29,20 @@ No changes yet.
 - Scope tags now layer over matching root tags and keep scope-local caches.
 - Scope reset now clears local entries/caches and resets used resettable services (including scope tags).
 
-## [0.2.0](https://github.com/duoncode/container/releases/tag/0.2.0) (2026-02-21)
+## [0.2.0](https://github.com/celemas/container/releases/tag/0.2.0) (2026-02-21)
 
-Project renamed from duon/registry to duon/container.
+Project renamed from celemas/registry to celemas/container.
 
 Codename: Jonas
 
 ### Changed
 
-- Package renamed from `duon/registry` to `duon/container`
-- Namespace changed from `Duon\Registry` to `Duon\Container`
+- Package renamed from `celemas/registry` to `celemas/container`
+- Namespace changed from `Celemas\Registry` to `Celemas\Container`
 - Main class renamed from `Registry` to `Container`
 - Parameter `includeRegistry` renamed to `includeContainer`
 
-## [0.1.0](https://github.com/duoncode/registry/releases/tag/0.1.0) (2026-01-30)
+## [0.1.0](https://github.com/celemas/container/releases/tag/0.1.0) (2026-01-30)
 
 Initial release.
 
@@ -48,4 +50,4 @@ Initial release.
 
 - PSR-11 compatible dependency injection container
 - Service registration and resolution
-- Autowiring support via duon/wire integration
+- Autowiring support via celemas/wire integration
