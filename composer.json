@@ -1,5 +1,5 @@
 {
-	"name": "duon/container",
+	"name": "celemas/container",
 	"description": "A PSR-11 compatible dependency injection library",
 	"keywords": [
 		"di",
@@ -14,26 +14,26 @@
 	"authors": [
 		{
 			"name": "Ernst",
-			"email": "ernst@duon.sh"
+			"email": "ernst@celemas.dev"
 		}
 	],
-	"homepage": "https://duon.sh/container",
+	"homepage": "https://celemas.dev/container",
 	"require": {
 		"php": "^8.5",
-		"duon/wire": "^0.5.0",
+		"celemas/wire": "^0.5.0",
 		"psr/container": "^2.0"
 	},
 	"require-dev": {
-		"duon/dev": "^3.0"
+		"celemas/dev": "^3.0"
 	},
 	"autoload": {
 		"psr-4": {
-			"Duon\\Container\\": "src"
+			"Celemas\\Container\\": "src"
 		}
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"Duon\\Container\\Tests\\": "tests"
+			"Celemas\\Container\\Tests\\": "tests"
 		}
 	},
 	"scripts": {
