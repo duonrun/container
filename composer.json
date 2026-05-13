@@ -24,7 +24,7 @@
 		"psr/container": "^2.0"
 	},
 	"require-dev": {
-		"celemas/dev": "^4.1"
+		"celemas/dev": "^4.2"
 	},
 	"autoload": {
 		"psr-4": {
